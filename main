@@ -1,0 +1,51 @@
+#include "mbed.h"
+
+PwmOut led(LED1);
+Serial pc(USBTX, USBRX, 9600);
+volatile char i = '\0';
+float intensidade;
+
+void CharInput(){
+	i = pc.getc();
+}
+
+int main(){
+
+	pc.attach(&CharInput);
+	while(1){
+        if (i != '\0'){
+
+      switch(i){
+
+        case '+':
+        if (intensidade >= 1.0)
+          intensidade = 1.0;
+        else
+          intensidade += 0.05;
+        break;
+
+        case '-':
+        if (intensidade <= 0.0)
+          intensidade = 0.0;
+        else
+          intensidade -= 0.05;
+        break;
+
+        case '*':
+        intensidade = 1.0;
+        break;
+
+        case '/':
+        intensidade = 0.0;
+        break;
+
+        default:
+        pc.printf("Comando inválido! Por favor, insira um comando válido.\n");
+        break;
+      }
+      led.write (intensidade);
+      pc.printf("Intensidade: %f\n", &intensidade);
+      wait_ms(1000);
+}
+}
+}
